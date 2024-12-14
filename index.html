@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me!</title>
+    <style>
+        :root {
+            --discord-grey: #2C2F33;
+            --discord-purple: #5865F2;
+            --text-color: #FFFFFF;
+            --light-grey: #B9BBBE;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--discord-grey);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem 1rem;
+            background-color: var(--discord-purple);
+            color: var(--text-color);
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--light-grey);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        section {
+            background: var(--discord-grey);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            overflow: hidden;
+            max-height: 3rem;
+            transition: max-height 0.5s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        section.open {
+            max-height: 500px;
+        }
+
+        section h2 {
+            margin-bottom: 0;
+            color: var(--discord-purple);
+            font-size: 1.2rem;
+            position: absolute;
+            top: 50%;
+            left: 1.5rem;
+            transform: translateY(-50%);
+        }
+
+        section.open h2 {
+            position: relative;
+            top: 0;
+            left: 0;
+            transform: none;
+            margin-bottom: 1rem;
+        }
+
+        section p, section ul {
+            margin-top: 2.5rem;
+            display: none;
+        }
+
+        section.open p, section.open ul {
+            display: block;
+        }
+
+        section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        a {
+            color: var(--discord-purple);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--light-grey);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--discord-grey);
+            color: var(--light-grey);
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to My World!</h1>
+        <p>Hello Im Oliver!</p>
+    </header>
+    <main>
+        <section id="about">
+            <h2>About Me</h2>
+            <p>Hi, I'm a passionate developer with experience in creating clean, user-friendly designs. I specialize in web development, UI/UX design, and modern frameworks.</p>
+        </section>
+        <section id="portfolio">
+            <h2>What I Do</h2>
+            <ul>
+                <li><strong>Hacking:</strong> Ethical hacking, penetration testing, vulnerability assessments, and system security enhancements.</li>
+                <li><strong>Programming:</strong> Proficient in Python, JavaScript, and C++; experienced in creating robust, scalable applications.</li>
+                <li><strong>IT:</strong> Network management, server administration, and IT infrastructure optimization for businesses.</li>
+            </ul>
+        </section>
+        <section id="contact">
+            <h2>Contact</h2>
+            <p>Contact me at: <a href="mailto:oliverigel08@gmail.com">oliverigel08@gmail.com</a></p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 DLF. All Rights Reserved.</p>
+    </footer>
+    <script>
+        const sections = document.querySelectorAll('section');
+
+        sections.forEach(section => {
+            section.addEventListener('click', () => {
+                section.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html>
