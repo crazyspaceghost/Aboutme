@@ -1,159 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Me!</title>
-    <style>
-        :root {
-            --discord-grey: #2C2F33;
-            --discord-purple: #5865F2;
-            --text-color: #FFFFFF;
-            --light-grey: #B9BBBE;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--discord-grey);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
-
-        header {
-            text-align: center;
-            padding: 2rem 1rem;
-            background-color: var(--discord-purple);
-            color: var(--text-color);
-            border-radius: 0 0 20px 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        header p {
-            font-size: 1.2rem;
-            color: var(--light-grey);
-        }
-
-        main {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 1rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        section {
-            background: var(--discord-grey);
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            overflow: hidden;
-            max-height: 3rem;
-            transition: max-height 0.5s ease, transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-        }
-
-        section.open {
-            max-height: 500px;
-        }
-
-        section h2 {
-            margin-bottom: 0;
-            color: var(--discord-purple);
-            font-size: 1.2rem;
-            position: absolute;
-            top: 50%;
-            left: 1.5rem;
-            transform: translateY(-50%);
-        }
-
-        section.open h2 {
-            position: relative;
-            top: 0;
-            left: 0;
-            transform: none;
-            margin-bottom: 1rem;
-        }
-
-        section p, section ul {
-            margin-top: 2.5rem;
-            display: none;
-        }
-
-        section.open p, section.open ul {
-            display: block;
-        }
-
-        section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-        }
-
-        a {
-            color: var(--discord-purple);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        a:hover {
-            color: var(--light-grey);
-        }
-
-        footer {
-            text-align: center;
-            padding: 1rem;
-            background-color: var(--discord-grey);
-            color: var(--light-grey);
-            margin-top: 2rem;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>About me!</title>
+  <style>
+    /* Terminal background styling */
+    #terminal-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      color: #00ff00;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      padding: 10px;
+      z-index: 0;
+      overflow: hidden;
+      white-space: pre;
+      pointer-events: none;
+    }
+    /* Main container styling (on top of the background) */
+    .container {
+      position: relative;
+      z-index: 10; /* Increased stacking order */
+      width: 90%;
+      max-width: 1000px;
+      text-align: center;
+      padding: 40px;
+      border: 2px solid #00ff00;
+      background: rgba(0, 0, 0, 0.95); /* Less transparent for better readability */
+      box-shadow: 0 0 20px #00ff00;
+      margin: 20px auto;
+      color: #00ff00; /* Ensure text is green */
+    }
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2em;
+    }
+    /* Content text with fade transition */
+    #content {
+      margin: 20px 0;
+      font-size: 1em;
+      min-height: 100px;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+    /* Buttons styled like terminal commands */
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .btn {
+      padding: 10px 20px;
+      border: 1px solid #00ff00;
+      background: transparent;
+      color: #00ff00;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .btn:hover {
+      background: #00ff00;
+      color: #000;
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to My World!</h1>
-        <p>Hello Im Oliver!</p>
-    </header>
-    <main>
-        <section id="about">
-            <h2>About Me</h2>
-            <p>Hi, I'm a passionate developer with experience in creating clean, user-friendly designs. I specialize in web development, UI/UX design, and modern frameworks.</p>
-        </section>
-        <section id="portfolio">
-            <h2>What I Do</h2>
-            <ul>
-                <li><strong>Hacking:</strong> Ethical hacking, penetration testing, vulnerability assessments, and system security enhancements.</li>
-                <li><strong>Programming:</strong> Proficient in Python, JavaScript, and C++; experienced in creating robust, scalable applications.</li>
-                <li><strong>IT:</strong> Network management, server administration, and IT infrastructure optimization for businesses.</li>
-            </ul>
-        </section>
-        <section id="contact">
-            <h2>Contact</h2>
-            <p>Contact me at: <a href="mailto:oliverigel08@gmail.com">oliverigel08@gmail.com</a></p>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2024 DLF. All Rights Reserved.</p>
-    </footer>
-    <script>
-        const sections = document.querySelectorAll('section');
+  <!-- Terminal background with fake hacking text -->
+  <div id="terminal-background"></div>
+  
+  <!-- Portfolio container -->
+  <div class="container">
+    <h1>About me!</h1>
+    <div id="content">
+      Welcome to your terminal. Enter a command by clicking one of the options below.
+    </div>
+    <div class="buttons">
+      <button class="btn" data-text="Command: overview --desc 'Cybersecurity researcher with expertise in ethical hacking and threat analysis.'">
+        Overview
+      </button>
+      <button class="btn" data-text="Command: skills --list 'Network security, Penetration testing, Incident response, Forensics.'">
+        Skills
+      </button>
+      <button class="btn" data-text="Command: projects --info 'Projects include red team operations, malware analysis, and secure protocol development.'">
+        Projects
+      </button>
+      <button class="btn" data-text="Command: contact --send 'Connect for consultations and collaborations via secure channels.'">
+        Contact
+      </button>
+    </div>
+  </div>
 
-        sections.forEach(section => {
-            section.addEventListener('click', () => {
-                section.classList.toggle('open');
-            });
-        });
-    </script>
+  <script>
+    // Fake hacking terminal background effect
+    const terminalBg = document.getElementById('terminal-background');
+
+    function generateRandomLine() {
+      const characters = "01";
+      let line = "";
+      // Generate a random string of 40 to 80 characters
+      const length = Math.floor(Math.random() * 40) + 40;
+      for (let i = 0; i < length; i++) {
+        line += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      // Occasionally append a hacking phrase
+      if (Math.random() < 0.1) {
+        const phrases = [
+          "ACCESS GRANTED", 
+          "INTRUSION DETECTED", 
+          "HACKING INITIATED", 
+          "SECURITY BREACH", 
+          "SYSTEM OVERRIDE", 
+          "FIREWALL DISABLED"
+        ];
+        line += " " + phrases[Math.floor(Math.random() * phrases.length)];
+      }
+      return line;
+    }
+
+    setInterval(() => {
+      let line = generateRandomLine();
+      terminalBg.textContent += line + "\n";
+      // Limit to the last 100 lines for performance
+      let lines = terminalBg.textContent.split("\n");
+      if (lines.length > 100) {
+        lines.shift();
+        terminalBg.textContent = lines.join("\n");
+      }
+      // Auto-scroll to the bottom of the terminal background
+      terminalBg.scrollTop = terminalBg.scrollHeight;
+    }, 100);
+
+    // Portfolio content text fade transition on button click
+    const contentDiv = document.getElementById('content');
+    const buttons = document.querySelectorAll('.btn');
+
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Fade out current text
+        contentDiv.style.opacity = 0;
+        setTimeout(() => {
+          // Update the text and fade in
+          contentDiv.innerHTML = button.getAttribute('data-text');
+          contentDiv.style.opacity = 1;
+        }, 500);
+      });
+    });
+  </script>
 </body>
 </html>
