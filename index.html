@@ -1,88 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>𖤐 The Abyss of My Soul 𖤐</title>
-  <style>
-    /* Dark and twisted styling */
-    body {
-      background-color: #000;
-      color: #e6e6e6;
-      font-family: 'IM Fell English', 'Old English Text MT', serif;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      font-size: 3em;
-      color: #c0392b;
-      text-shadow: 0 0 10px #c0392b;
-    }
-    .button-container {
-      text-align: center;
-      margin: 20px 0;
-    }
-    button {
-      background-color: #222;
-      color: #e6e6e6;
-      border: 2px solid #c0392b;
-      padding: 10px 20px;
-      margin: 5px;
-      font-size: 1.1em;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    button:hover {
-      background-color: #c0392b;
-      color: #000;
-    }
-    #text-content {
-      background-color: #111;
-      border: 2px solid #c0392b;
-      padding: 20px;
-      margin: 0 auto;
-      max-width: 800px;
-      min-height: 150px;
-      font-size: 1.2em;
-      line-height: 1.5;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Stats</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>𖤐 The Abyss of My Soul 𖤐</h1>
-  <div class="button-container">
-    <button onclick="showText('about')">About</button>
-    <button onclick="showText('talent')">Talent</button>
-    <button onclick="showText('metal')">Metal</button>
-    <button onclick="showText('motive')">Motive</button>
-  </div>
-  <div id="text-content">
-    <p>Click a button to reveal the darkness...</p>
-  </div>
-  
-  <script>
-    // Reveal the cursed text corresponding to each button.
-    function showText(section) {
-      let content = "";
-      switch(section) {
-        case 'about':
-          content = "<p>I am Oliver, a Swedish black metal bassist forged in the frostbitten winds of Dalarna. 🩸 From childhood, metal coursed through my veins, but it was Mayhem that led me into the abyss. The first time I heard 'De Mysteriis Dom Sathanas,' I knew—there was no turning back. The raw, unholy power of black metal became my scripture, and now I wield my bass as a weapon of sonic destruction. ☠</p>";
-          break;
-        case 'talent':
-          content = "<p>My talent is a symphony of chaos; I make dark riffs and sinister harmonies that echo through the void. 𖤐 Witness the art of malevolent creation.</p>";
-          break;
-        case 'metal':
-          content = "<p>I bleed metal, The guitars wail, the drums summon thunder, and my spirit roars in a cacophony of blackened fury. 𖤐</p>";
-          break;
-        case 'motive':
-          content = "<p>Driven by the cursed flames of eternal chaos, my motive is to bring black metal back to the media for everyone to hear</p>";
-          break;
-        default:
-          content = "<p>Embrace the darkness...</p>";
-      }
-      document.getElementById("text-content").innerHTML = content;
-    }
-  </script>
+    <header class="hero">
+        <h1>Oliver</h1>
+        <p>"technician"</p>
+    </header>
+
+    <!-- Stats Page Section -->
+    <section class="stats">
+        <h2>Hunter Stats</h2>
+        <div class="stat-table">
+            <div class="stat">Level: <span id="level">263</span></div>
+            <div class="stat">Rank: <span id="skills-level">national</span></div>
+            <div class="stat">Class: <span id="experience">Shadow Mage</span></div>
+            <div class="stat">Alias: <span id="threat-analysis">"Old man"</span></div>
+            <div class="stat">Special ability: <span id="incident-response">Arise.</span></div>
+        </div>
+    </section>
+
+    <!-- Interactive Buttons for Skills, Abilities, Lore, and Inventory -->
+    <section class="interactive">
+        <h2>Choose a Category</h2>
+        <div class="buttons">
+            <button onclick="toggleContent('skills-content')">Skills</button>
+            <button onclick="toggleContent('abilities-content')">Abilities</button>
+            <button onclick="toggleContent('inventory-content')">Inventory</button>
+        </div>
+
+        <!-- Content Boxes -->
+        <div id="skills-content" class="content-box">
+            <h3>Skills</h3>
+           <p>Firewall Conqueror (Lvl 12): Can configure and optimize firewalls to withstand even the most sophisticated attacks.</p>
+           <p>Scripting Sorcery (Lvl 9): Use the most obscure scripting languages to automate tasks and create custom solutions.</p>
+           <p>Penetration Specialist (Lvl 11): Lead simulated cyber-attacks to expose weaknesses and fortify systems before the real threats arrive.</p>
+           <P>Data Shield (Lvl 13): Create impenetrable layers of security that even the most advanced malware can’t breach.</P>
+        </div>
+
+        <div id="abilities-content" class="content-box">
+            <h3>Abilities</h3>
+            <p>Network Mirage (Cooldown: 10 mins): Create a decoy network that misleads attackers and sends them on a wild goose chase.</p>
+            <p>Infinite Loop (Cooldown: 10 mins): Create a never-ending loop in the system that traps enemies in their own code or exploits.</p>
+            <p>Counter Hack (Cooldown: 40 mins): Detect and neutralize incoming attacks in real-time, automatically shutting down any offensive efforts before they can strike.</p>
+            <P>System Collapse (Cooldown: 60 mins): Trigger a chain reaction of system failures that crash the target’s infrastructure and defenses.</P>
+        </div>
+
+        <div id="inventory-content" class="content-box">
+            <h3>Inventory</h3>
+           <P>Packet Injector (Durability: 10 uses): A device that sends corrupted or malicious packets into a network, causing disruptions or allowing unauthorized access.</P>
+           <p>Encrypted Blade (Durability: Infinite): A lightweight digital sword capable of slicing through firewalls and encryptions with ease.</p>
+           <p>VPN Shield (Durability: 80%): An unbreakable shield that hides your true location and identity, protecting you from most online surveillance tools.</p>
+           <p>SQL Injection Tool (Durability: 5 uses): A powerful tool for injecting malicious SQL queries into databases to extract sensitive information or disrupt operations.</p>
+           <p>Network Mapper (Durability: Infinite): A scanner that allows you to map out and visualize any network, identifying vulnerabilities and weak points for exploitation.</p>
+           <p>Malware Antidote: A special serum that instantly removes any malware infection or backdoor you’ve encountered.</p>
+            <p>Effect: Instantly cures any malware or system compromise.</p>
+            <p>Uses: 3 per day.</p>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2025 GHXST. All Rights Reserved.</p>
+    </footer>
+
+    <script src="app.js"></script>
 </body>
 </html>
