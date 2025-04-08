@@ -3,66 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player Stats</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Anarchy Book</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1c1c1c;
+            color: white;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        header {
+            padding: 20px;
+            background-color: #cc0000;
+            font-size: 2em;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            background-color: #333;
+            color: #fff;
+            font-size: 1.2em;
+            padding: 15px;
+            width: 150px;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .button:hover {
+            background-color: #cc0000;
+        }
+
+        .content {
+            display: none;
+            background-color: #444;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: left;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .content p {
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .content h2 {
+            margin-top: 0;
+            color: #cc0000;
+        }
+    </style>
 </head>
 <body>
-    <header class="hero">
-        <h1>Oliver</h1>
-        <p>"𝐆𝐇𝐗𝐒𝐓"</p>
-    </header>
 
-    <!-- Stats Page Section -->
-    <section class="stats">
-        <h2>Hunter Stats</h2>
-        <div class="stat-table">
-            <div class="stat">Level: <span id="level">26</span></div>
-            <div class="stat">Rank: <span id="skills-level">national</span></div>
-            <div class="stat">Class: <span id="experience">Shadow Mage</span></div>
-            <div class="stat">Alias: <span id="threat-analysis">"Old man"</span></div>
-            <div class="stat">Special ability: <span id="incident-response">Arise.</span></div>
-        </div>
-    </section>
+<header>
+    Anarchy Book Website
+</header>
 
-    <!-- Interactive Buttons for Skills, Abilities, Lore, and Inventory -->
-    <section class="interactive">
-        <h2>Choose a Category</h2>
-        <div class="buttons">
-            <button onclick="toggleContent('skills-content')">Skills</button>
-            <button onclick="toggleContent('abilities-content')">Abilities</button>
-            <button onclick="toggleContent('inventory-content')">Inventory</button>
-        </div>
+<div class="container">
+    <div class="button-container">
+        <button class="button" onclick="toggleContent('whoIAm')">Who I Am</button>
+        <button class="button" onclick="toggleContent('whatIWant')">What I Want</button>
+        <button class="button" onclick="toggleContent('myMotives')">My Motives</button>
+        <button class="button" onclick="toggleContent('bookSummary')">Summary of the Book</button>
+    </div>
 
-        <!-- Content Boxes -->
-        <div id="skills-content" class="content-box">
-            <h3>Skills</h3>
-           <p>Firewall Conqueror (Lvl 12): Can configure and optimize firewalls to withstand even the most sophisticated attacks.</p>
-           <p>Scripting Sorcery (Lvl 9): Use the most obscure scripting languages to automate tasks and create custom solutions.</p>
-           <p>Penetration Specialist (Lvl 11): Lead simulated cyber-attacks to expose weaknesses and fortify systems before the real threats arrive.</p>
-           <P>Data Shield (Lvl 13): Create impenetrable layers of security that even the most advanced malware can’t breach.</P>
-        </div>
+    <div id="whoIAm" class="content">
+        <h2>Who I Am</h2>
+        <p>I am a product of the very system I seek to destroy. Born into a world of lies, deceit, and manipulation, I grew up questioning everything that was handed to me. From a young age, I learned the truth was never served to the masses—only the illusion of order, justice, and fairness. But deep down, I could feel the rot beneath it all. I saw the inequality, the suffering of the many while the powerful few thrived off their exploitation.</p>
+        <p>What am I then? A rebel? A revolutionary? Perhaps. But I am also someone who simply refuses to accept the world they’ve designed for us. I am not just a symbol of defiance. I am the embodiment of the rage of millions who’ve been crushed underfoot by a corrupt and oppressive regime. My existence is an affront to their carefully constructed lies.</p>
+        <p>But I do not act out of anger alone. I act with purpose. My journey is not just about personal vendettas. It is about destroying the structure that keeps us chained. I am the fire that will burn down the false utopia they’ve built. I stand against the system, not because I have nothing left to lose, but because I believe that a world without this system is possible—a world of true freedom.</p>
+    </div>
 
-        <div id="abilities-content" class="content-box">
-            <h3>Abilities</h3>
-            <p>Network Mirage (Cooldown: 10 mins): Create a decoy network that misleads attackers and sends them on a wild goose chase.</p>
-            <p>Infinite Loop (Cooldown: 10 mins): Create a never-ending loop in the system that traps enemies in their own code or exploits.</p>
-            <p>Counter Hack (Cooldown: 40 mins): Detect and neutralize incoming attacks in real-time, automatically shutting down any offensive efforts before they can strike.</p>
-            <P>System Collapse (Cooldown: 60 mins): Trigger a chain reaction of system failures that crash the target’s infrastructure and defenses.</P>
-        </div>
+    <div id="whatIWant" class="content">
+        <h2>What I Want</h2>
+        <p>I want the world to be torn apart. I want the pillars of society—the government, the corporations, the banks, the military-industrial complex—to crumble and fall. I want to see the chains that have bound humanity for centuries shattered. The lies we’ve been fed will be exposed for what they are. The truth will no longer be buried under layers of bureaucracy and propaganda.</p>
+        <p>What I want is not a mere revolution, but a complete and total transformation of the way we live. I want a world where power is no longer concentrated in the hands of a few, where wealth is not hoarded by the already privileged, and where decisions are made collectively, not by an elite class. I want to see people rise up, no longer shackled by the chains of the system, but empowered to define their own destinies.</p>
+        <p>My vision is a world where no one is oppressed, where freedom is not just a concept but a tangible reality. A world where the state is not the almighty ruler, but a reflection of the people. A world where we can all live without fear, without control, without constant surveillance. That’s what I want—a complete upheaval, a world built on the ashes of the old system, where freedom reigns supreme.</p>
+    </div>
 
-        <div id="inventory-content" class="content-box">
-            <h3>Inventory</h3>
-           <P>Packet Injector (Durability: 10 uses): A device that sends corrupted or malicious packets into a network, causing disruptions or allowing unauthorized access.</P>
-           <p>Encrypted Blade (Durability: Infinite): A lightweight digital sword capable of slicing through firewalls and encryptions with ease.</p>
-           <p>VPN Shield (Durability: 80%): An unbreakable shield that hides your true location and identity, protecting you from most online surveillance tools.</p>
-           <p>SQL Injection Tool (Durability: 5 uses): A powerful tool for injecting malicious SQL queries into databases to extract sensitive information or disrupt operations.</p>
-           <p>Network Mapper (Durability: Infinite): A scanner that allows you to map out and visualize any network, identifying vulnerabilities and weak points for exploitation.</p>
-           <p>Malware Antidote: A special serum that instantly removes any malware infection or backdoor you’ve encountered.</p>
-            <p>Effect: Instantly cures any malware or system compromise.</p>
-            <p>Uses: 3 per day.</p>
-        </div>
-    </section>
+    <div id="myMotives" class="content">
+        <h2>My Motives</h2>
+        <p>My motives are clear: expose the truth, dismantle the oppressive systems, and ignite a global movement for freedom. I am not motivated by personal gain, nor by the desire for power. I am driven by the desire to see the chains fall from the wrists of the oppressed, to see the people rise up and overthrow those who have abused their power for centuries.</p>
+        <p>My motives come from a deep understanding of the corruption that lies at the heart of society. I’ve seen firsthand how the system exploits and manipulates, how it silences dissent and crushes rebellion. I’ve seen the devastation caused by the greed of the powerful, the exploitation of the poor, and the erasure of those who dare to question the status quo.</p>
+        <p>But it’s not just about destruction. It’s about liberation. The fire that I set is not one of chaos for the sake of chaos—it is a cleansing fire that will burn away the lies and leave behind the fertile soil for a new world. A world where people are no longer bound by invisible chains, where they can live as they choose, free from the shackles of the old systems.</p>
+    </div>
 
-    <script src="app.js"></script>
+    <div id="bookSummary" class="content">
+        <h2>Summary of the Book</h2>
+        <p>The book follows the journey of a protagonist who, after years of living under the thumb of a corrupt government, finally breaks free. The protagonist is a symbol of defiance—a representation of the countless individuals who have been ground into the dirt by the systems of power. As they navigate the treacherous landscape of rebellion, they encounter others who share the same desire for freedom, and together, they form a movement that seeks to overthrow the very institutions that have held humanity captive for centuries.</p>
+        <p>The story is not just a narrative of rebellion, but a philosophical exploration of what it means to be free. It challenges the notion of control, of order, and of what society should look like. The protagonist grapples with the idea that true freedom cannot be achieved without the destruction of the very systems that have conditioned humanity to accept subjugation. As the revolution intensifies, they begin to question whether their actions will lead to the world they envision—or if they will create something worse.</p>
+        <p>Ultimately, this is a story about choice. It is a call to arms, but it also asks the difficult questions: What happens when the old world falls? What do we rebuild in its place? The book serves as both a warning and a challenge: It’s not enough to tear down the old system. The real work comes after that, when we must decide what comes next. Freedom is not a simple idea; it is a radical one. And it requires us to rethink everything we’ve been taught to believe.</p>
+    </div>
+</div>
+
+<script>
+    function toggleContent(contentId) {
+        const content = document.getElementById(contentId);
+        const allContents = document.querySelectorAll('.content');
+        
+        // Close all contents first
+        allContents.forEach(item => {
+            if (item !== content) item.style.display = 'none';
+        });
+
+        // Toggle the clicked content
+        content.style.display = content.style.display === 'block' ? 'none' : 'block';
+    }
+</script>
+
 </body>
 </html>
