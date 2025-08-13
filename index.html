@@ -1,246 +1,450 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>About Me</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    :root {
-      --discord-bg: #23272a;
-      --discord-box: #e3e5e8;
-      --discord-purple: #5865f2;
-      --discord-purple-dark: #4752c4;
-      --discord-text-dark: #23272a;
-      --discord-text-light: #fff;
-    }
-    body {
-      background: var(--discord-bg);
-      color: var(--discord-text-dark);
-      font-family: "Segoe UI", Arial, sans-serif;
-      min-height: 100vh;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 2rem 0;
-    }
-    .container {
-      background: var(--discord-bg);
-      border-radius: 1.5rem;
-      box-shadow: 0 6px 32px rgba(40,48,54,0.18);
-      max-width: 650px;
-      width: 95%;
-      padding: 2.5rem 1.2rem 2.2rem 1.2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 400px;
-      margin-bottom: 2rem;
-    }
-    h1 {
-      color: var(--discord-purple);
-      margin-bottom: 1.7rem;
-      letter-spacing: 2px;
-      font-size: 2.2rem;
-      text-align: center;
-    }
-    .button-row {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 2.3rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .discord-btn, .back-btn {
-      background: var(--discord-purple);
-      color: var(--discord-text-light);
-      border: none;
-      outline: none;
-      padding: 0.85rem 1.5rem;
-      border-radius: 1.1rem;
-      font-size: 1.07rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.16s;
-      box-shadow: 0 2px 8px rgba(40,48,54,0.12);
-      margin-bottom: 0.2rem;
-    }
-    .discord-btn:active, .back-btn:active {
-      background: var(--discord-purple-dark);
-    }
-    .dropbox {
-      background: var(--discord-box);
-      color: var(--discord-text-dark);
-      border-radius: 1.3rem;
-      padding: 2.3rem 2.1rem 2rem 2.1rem;
-      width: 100%;
-      margin-bottom: 1.6rem;
-      font-size: 1.09rem;
-      box-shadow: 0 4px 16px rgba(60,60,60,0.11);
-      min-width: 250px;
-      max-width: 650px;
-      word-break: break-word;
-      line-height: 1.58;
-      text-align: left;
-    }
-    .section-title {
-      font-size: 1.32rem;
-      color: var(--discord-purple-dark);
-      margin: 1.2rem 0 0.5rem 0;
-      letter-spacing: 1px;
-    }
-    .category-content {
-      margin-bottom: 1.4rem;
-    }
-    ul {
-      margin-top: 0.3rem;
-      margin-bottom: 1.2rem;
-      padding-left: 1.1em;
-    }
-    li {
-      margin-bottom: 0.6em;
-    }
-    .back-btn {
-      margin-top: 1.5rem;
-      background: var(--discord-purple-dark);
-      font-size: 1rem;
-      border-radius: 1rem;
-      padding: 0.75rem 1.3rem;
-    }
-    @media (max-width: 700px) {
-      .container {
-        padding: 1rem 0.5rem 1.2rem 0.5rem;
-        min-height: 0;
-      }
-      .dropbox {
-        font-size: 0.99rem;
-        padding: 1.1rem 0.7rem;
-        max-width: 95vw;
-      }
-      h1 {
-        font-size: 1.4rem;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container" id="mainContainer">
-    <h1 id="mainTitle">Hello!</h1>
-    <div class="button-row" id="mainButtons">
-      <button class="discord-btn" onclick="showSection('about')">About</button>
-      <button class="discord-btn" onclick="showSection('skills')">Skills</button>
-      <button class="discord-btn" onclick="showSection('interests')">Interests</button>
-      <button class="discord-btn" onclick="showSection('projects')">Current Projects</button>
-    </div>
-    <div class="dropbox" id="mainText">
-      <span>
-        Hi, I’m Oliver!<br><br>
-        Press a button above to see my About Me.<br>
-        Everything changes when you click.
-      </span>
-    </div>
-  </div>
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
-  <script>
-    // All main content as HTML per section
-    const content = {
-      about: `
-        <div class="dropbox">
-          <div class="section-title">About</div>
-          <div class="category-content">
-            <ul>
-              <li>Hey! I'm Oliver, 17, living in Sweden and riding the wave between science, hacking, and questionable amounts of caffeine. Linux user. If you spot a sleep-deprived nerd with a skate deck and a server in his backpack — that's me.</li>
-              <li>Certified scientist-in-training, currently surviving school and planning my future cyberpunk lair. I love building things (digital or physical), breaking them, then building them again, but better.</li>
-              <li>Avid fan of cyberpunk, folklore, and tech. Sometimes I make music or work on games. If it glows, beeps, or has code — I'm interested.</li>
-              <li>Aspiring cybersec pro and self-declared lord of all things “sketchy but legal.” Not a robot. Yet.</li>
-            </ul>
-          </div>
-          <button class="back-btn" onclick="backToMain()">Back</button>
-        </div>
-      `,
-      skills: `
-        <div class="dropbox">
-          <div class="section-title">Skills</div>
-          <div class="category-content">
-            <ul>
-              <li><b>Cybersecurity:</b> Pen-testing, threat hunting, malware analysis, social engineering, Red/Blue Team ops, network forensics, WiFi/ESP32 hacking.</li>
-              <li><b>Programming:</b> C++, Python, JavaScript, bash, Linux automation, AI scripting, game dev, modding.</li>
-              <li><b>AI & Machine Learning:</b> LLMs, prompt engineering, Kobold/SillyTavern setups, neural network tinkering, data science.</li>
-              <li><b>Skateboarding:</b> Street, park, and vert. Custom board design. Can ollie over a server rack, probably.</li>
-              <li><b>Hardware:</b> Custom PC builds, server setup, car tuning (Volvo gang), electronics repair, ESP32 projects, soldering.</li>
-              <li><b>Web & Networking:</b> Hosting game servers, website design, full-stack dev, proxy/VPN usage.</li>
-              <li><b>Reverse Engineering:</b> Disassembly, firmware poking, secure OS concepts.</li>
-              <li><b>Teamwork:</b> Can explain weird problems to normal people (with memes).</li>
-              <li><b>Languages:</b> English, Swedish, Japanese (learning, can order sushi and read kanji).</li>
-              <li><b>Music:</b> Guitar, harsh vocals, synths, DAW work.</li>
-              <li><b>Other:</b> Problem-solving under pressure. Bartering like it’s 2099.</li>
-            </ul>
-          </div>
-          <button class="back-btn" onclick="backToMain()">Back</button>
-        </div>
-      `,
-      interests: `
-        <div class="dropbox">
-          <div class="section-title">Interests</div>
-          <div class="category-content">
-            <ul>
-              <li>Tech (open source, hacking, AI), skateboarding, metal & punk music, cyberpunk worlds, ancient mythology, folklore, cryptids, and anime. Also: building secret bases in games... and in real life.</li>
-              <li>Game dev (from Roblox to Unreal), racing (cars & bikes — the faster the better), learning random skills at 3am, lore deep dives (Sea of Thieves, Titanfall, Fate series).</li>
-              <li>Paganism & Norse mythology, philosophy, science fiction, ARG design, alternate history, survival planning, and “what if” scenarios that spiral way out of control.</li>
-              <li>Collecting weird gadgets, reverse engineering abandoned tech, and occasionally — just vibing with friends, online or IRL.</li>
-            </ul>
-          </div>
-          <button class="back-btn" onclick="backToMain()">Back</button>
-        </div>
-      `,
-      projects: `
-        <div class="dropbox">
-          <div class="section-title">Current Projects</div>
-          <div class="category-content">
-            <ul>
-              <li><b>Cybersecurity Lab:</b> Building a wrist-mounted ESP32 hacking tool with touchscreen, battery, and custom menu.</li>
-              <li><b>Custom OS:</b> Developing TKU OS/ZTU OS — hacker-themed, modular, secure Linux distros inspired by Watch Dogs DedSec OS.</li>
-              <li><b>Bartering System:</b> Designing a fully-detailed, goods-and-services barter/gift card network (yes, like the Undercity from Arcane).</li>
-              <li><b>Game Dev:</b> “Fractura: Last Light Protocol” — a story-driven survival parkour game set on a sentient alien world, with original lore, custom language, and reactive factions.</li>
-              <li><b>Minecraft Server:</b> Launching a heavily-modded RPG/MMO Minecraft world with proximity chat, Black Desert Online-inspired economy.</li>
-              <li><b>Car Projects:</b> Upgrading my Volvo V70 (performance tuning, coilovers, custom interior) and prepping an Audi A6 for AWD drifting.</li>
-              <li><b>ARG Design:</b> Developing a multi-layered ARG (cult + demon activity + leaked 911 calls) for YouTube and Discord.</li>
-              <li><b>AI & Web:</b> Setting up home servers for private LLMs, custom Discord bots, and a personal cloud.</li>
-            </ul>
-          </div>
-          <button class="back-btn" onclick="backToMain()">Back</button>
-        </div>
-      `,
+// =============================
+// DedSec × Arch Linux Terminal Portfolio — Single-file React Component
+// - Tailwind for styling (no external assets)
+// - Matrix rain background
+// - Interactive terminal with commands
+// - Theme switcher: dedsec | arch | matrix
+// =============================
+
+const THEMES = {
+  dedsec: {
+    name: "DedSec",
+    primary: "#7c3aed", // violet-600
+    secondary: "#06b6d4", // cyan-500
+    text: "#e2e8f0", // slate-200
+    subtext: "#94a3b8", // slate-400
+    glow: "#22d3ee",
+    matrix: "#22d3ee",
+    bg: "#07090e",
+  },
+  arch: {
+    name: "Arch",
+    primary: "#1793D1",
+    secondary: "#38bdf8", // sky-400
+    text: "#e2e8f0",
+    subtext: "#94a3b8",
+    glow: "#60a5fa",
+    matrix: "#38bdf8",
+    bg: "#05070b",
+  },
+  matrix: {
+    name: "Matrix",
+    primary: "#22c55e", // green-500
+    secondary: "#16a34a", // green-600
+    text: "#e2e8f0",
+    subtext: "#9ca3af",
+    glow: "#86efac",
+    matrix: "#22c55e",
+    bg: "#030a04",
+  },
+};
+
+const ARCH_ASCII = String.raw`
+                  -'
+                 .o+                  _              _              _
+                'ooo                 /\\  _   _  ___| | _____  ___| | __
+               'ooooo               ( ( )| | | |/ __| |/ / _ \/ __| |/ /
+              'ooooooo               \\/ | |_| | (__|   <  __/ (__|   <
+             :ooooooooo                 \\__,_|\___|_|\_\___|\___|_|\_\
+            .ooooooooooo
+           .oooooo  ooooo.        ARCH x DEDSEC x MATRIX — OLIVER (JCKL)
+          .ooooo      ooooo.      type 'help' to begin · 'theme dedsec|arch|matrix'
+         .ooooo        ooooo.
+`;
+
+const MOTD = (alias) => String.raw`
+┌─[${alias}@arch]─[~]
+└──╼ $ whoami
+> ${alias}
+
+// welcome to the zero-UI, all-signal portfolio.
+// everything runs from this terminal — just like it should.
+// try: help · about · skills · projects · contact · neofetch · resume · clear
+`;
+
+const SKILLS_TEXT = String.raw`
+Cybersecurity:
+  • Pen-testing, threat hunting, malware analysis
+  • Social engineering, Red/Blue Team ops, network forensics
+  • WiFi/ESP32 hacking
+
+Programming:
+  • C++, Python, JavaScript, bash
+  • Linux automation, AI scripting, game dev, modding
+
+AI & Machine Learning:
+  • LLMs, prompt engineering, Kobold/SillyTavern setups
+  • Neural network tinkering, data science
+
+Skateboarding:
+  • Street, park, vert — custom board design
+  • Can ollie over a server rack (probably)
+
+Hardware:
+  • Custom PC builds, server setup, car tuning (Volvo gang)
+  • Electronics repair, ESP32 projects, soldering
+
+Web & Networking:
+  • Hosting game servers, website design, full-stack dev
+  • Proxy/VPN usage
+
+Reverse Engineering:
+  • Disassembly, firmware poking, secure OS concepts
+
+Teamwork:
+  • Translating weird problems for normal humans (with memes)
+
+Languages:
+  • English, Swedish, Japanese (learning; can order sushi, read kanji)
+
+Music:
+  • Guitar, harsh vocals, synths, DAW work
+
+Other:
+  • Problem-solving under pressure. Bartering like it’s 2099.
+`;
+
+const ABOUT_TEXT = String.raw`
+Oliver (aka JCKL): scientist-minded hacker, full-stack builder, and digital skatepunk.
+If it can be taken apart, it can be understood — and rebuilt cleaner. I like reliable tools,
+minimal fluff, and shipping stuff that actually works.
+`;
+
+const PROJECTS_TEXT = String.raw`
+Active builds:
+  • ESP32 Wrist Tool — on-wrist cybersecurity Swiss army knife.
+  • ZTU OS / TKU OS — hacker-inspired Linux spins, clean modular UX.
+  • Fractura: Last Light Protocol — story-driven survival parkour game.
+  • Ghost Haven — factional underground garage ecosystem & ops rituals.
+`;
+
+function useMatrixRain(color) {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const fontSize = 16;
+    const columns = Math.floor(width / fontSize);
+    const drops = new Array(columns).fill(0);
+
+    let animId;
+    const draw = () => {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = color;
+      ctx.font = `${fontSize}px monospace`;
+      for (let i = 0; i < drops.length; i++) {
+        const char = String.fromCharCode(0x30A0 + Math.random() * 96);
+        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+        if (Math.random() > 0.975 || drops[i] * fontSize > height) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+      animId = requestAnimationFrame(draw);
     };
 
-    // Show section replaces main content with section content
-    function showSection(section) {
-      document.getElementById("mainContainer").innerHTML = `
-        <h1>Oliver's Discord About Me</h1>
-        ${content[section]}
-      `;
+    draw();
+
+    const onResize = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+    window.addEventListener("resize", onResize);
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [color]);
+  return canvasRef;
+}
+
+function Line({ children, theme, dim = false }) {
+  return (
+    <div
+      className={`whitespace-pre-wrap break-words leading-relaxed ${
+        dim ? "opacity-70" : ""
+      }`}
+      style={{ color: theme.text }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function Prompt({ alias, cwd, theme }) {
+  return (
+    <span>
+      <span style={{ color: theme.secondary }}>┌─[{alias}@arch]</span>
+      <span style={{ color: theme.subtext }}>─[{cwd}]</span>
+      <br />
+      <span style={{ color: theme.secondary }}>└──╼</span>
+      <span style={{ color: theme.text }}> $</span>
+    </span>
+  );
+}
+
+function Terminal({ themeKey = "dedsec", alias = "oliver", email = "oliverigel08@gmail.com" }) {
+  const inputRef = useRef(null);
+  const [themeName, setThemeName] = useState(themeKey);
+  const theme = THEMES[themeName];
+
+  const [history, setHistory] = useState(() => [ARCH_ASCII, MOTD(alias)]);
+  const [input, setInput] = useState("");
+  const [cwd] = useState("~");
+  const [stack, setStack] = useState([]); // for Up/Down
+  const [stackIdx, setStackIdx] = useState(-1);
+  const endRef = useRef(null);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [history]);
+
+  // ensure the input is focused on mount and after theme changes
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [themeName]);
+
+  const commands = useMemo(
+    () => ({
+      help: () => String.raw`
+Available commands:
+  about, skills, projects, contact, neofetch, wifi-scan, ollie
+  resume (download JSON), theme <dedsec|arch|matrix>, clear
+`,
+      about: () => ABOUT_TEXT,
+      skills: () => SKILLS_TEXT,
+      projects: () => PROJECTS_TEXT,
+      contact: () => String.raw`Contact:
+  • email: ${email}
+  • alias: ${alias} (JCKL)
+  • comms: PGP on request. No social.`,
+      neofetch: () => ARCH_ASCII + String.raw`
+OS: ZTU OS (Arch-based)   Kernel: 6.x  Uptime: ∞
+Shell: zsh                 WM: i3-gaps
+CPU: Human Neural Net      GPU: Pure Skill
+Memory: Forgettable        Disk: Immutable
+`,
+      clear: () => "__CLEAR__",
+      "wifi-scan": () => String.raw`wlan0 scan results:
+  • GHST-HAVEN  [-45dBm] WPA2
+  • ZTU-NODE-01 [-52dBm] WPA3
+  • ESP32-DEADBEEF [-60dBm] Open (lol)
+  • FREE-COFFEE-WIFI [-84dBm] Captive Portal (nope)` ,
+      ollie: () => "Attempting ollie over 42U rack... ✔ Landed. (Security applauds quietly.)",
+      resume: () => {
+        const data = {
+          name: "Oliver (JCKL)",
+          role: "Scientist-minded hacker & builder",
+          email,
+          skills: SKILLS_TEXT.split("\n").filter(Boolean),
+          projects: [
+            "ESP32 Wrist Tool",
+            "ZTU OS / TKU OS",
+            "Fractura: Last Light Protocol",
+            "Ghost Haven",
+          ],
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "oliver-jckl-resume.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        return "Exported resume → oliver-jckl-resume.json";
+      },
+      theme: (arg) => {
+        const key = String(arg || "").toLowerCase().trim();
+        if (!THEMES[key]) return `unknown theme: ${arg}\noptions: dedsec | arch | matrix`;
+        setThemeName(key);
+        return `theme set → ${THEMES[key].name}`;
+      },
+    }),
+    [alias, email]
+  );
+
+  function handleCommand(raw) {
+    const line = raw.trim();
+    if (!line) return;
+
+    // push to stack for Up/Down recall
+    setStack((s) => [line, ...s]);
+    setStackIdx(-1);
+
+    const [cmd, ...rest] = line.split(" ");
+    const arg = rest.join(" ");
+    const fn = commands[cmd];
+
+    if (!fn) {
+      setHistory((h) => [
+        ...h,
+        `\n${ARCH_ASCII.split("\n")[0]}\ncommand not found: ${cmd}\ntry 'help'`,
+      ]);
+      return;
     }
 
-    // Back to main menu
-    function backToMain() {
-      document.getElementById("mainContainer").innerHTML = `
-        <h1 id="mainTitle">Oliver's Discord About Me</h1>
-        <div class="button-row" id="mainButtons">
-          <button class="discord-btn" onclick="showSection('about')">About</button>
-          <button class="discord-btn" onclick="showSection('skills')">Skills</button>
-          <button class="discord-btn" onclick="showSection('interests')">Interests</button>
-          <button class="discord-btn" onclick="showSection('projects')">Current Projects</button>
-        </div>
-        <div class="dropbox" id="mainText">
-          <span>
-            Hi, I’m Oliver!<br><br>
-            Press a button above to see my Discord-inspired About Me.<br>
-            Everything changes when you click.
-          </span>
-        </div>
-      `;
+    const out = fn(arg);
+    if (out === "__CLEAR__") {
+      setHistory([]);
+    } else {
+      setHistory((h) => [...h, String(out)]);
     }
-  </script>
-</body>
-</html>
+  }
+
+  function onKeyDown(e) {
+    if (e.key === "Enter") {
+      handleCommand(input);
+      setInput("");
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setStackIdx((i) => {
+        const ni = Math.min(i + 1, stack.length - 1);
+        setInput(stack[ni] || input);
+        return ni;
+      });
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setStackIdx((i) => {
+        const ni = Math.max(i - 1, -1);
+        setInput(ni === -1 ? "" : stack[ni]);
+        return ni;
+      });
+    } else if (e.key === "c" && (e.ctrlKey || e.metaKey)) {
+      // emulate Ctrl+C
+      setHistory((h) => [...h, "^C"]);
+    }
+  }
+
+  // matrix background
+  const canvasRef = useMatrixRain(theme.matrix);
+
+  return (
+    <div className="relative min-h-screen w-full overflow-hidden" style={{ backgroundColor: theme.bg }}>
+      {/* Background matrix */}
+      <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-0" />
+
+      {/* subtle scanline + vignette */}
+      <div className="fixed inset-0 z-10 mix-blend-screen opacity-30" style={{
+        backgroundImage:
+          "repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 2px, transparent 4px)",
+      }} />
+      <div className="fixed inset-0 z-10 pointer-events-none" style={{
+        boxShadow: "inset 0 0 200px rgba(0,0,0,0.7)",
+      }} />
+
+      {/* Header */}
+      <header className="relative z-20 flex items-center justify-between px-6 py-4">
+        <div className="text-xl md:text-2xl font-bold tracking-wider select-none">
+          <span className="mr-2" style={{ color: theme.primary }}>▌▌</span>
+          <span className="glitch" data-text="JCKL">JCKL</span>
+          <span className="ml-2 text-xs md:text-sm" style={{ color: theme.subtext }}>oliver@arch</span>
+        </div>
+        <div className="flex items-center gap-2 text-xs md:text-sm" style={{ color: theme.subtext }}>
+          <span className="hidden sm:inline">theme:</span>
+          {Object.keys(THEMES).map((k) => (
+            <button
+              key={k}
+              onClick={() => setThemeName(k)}
+              className={`px-2 py-1 rounded border transition active:scale-[.98] ${
+                themeName === k ? "bg-white/5" : "hover:bg-white/5"
+              }`}
+              style={{
+                borderColor: theme.primary,
+                color: theme.text,
+                textTransform: "uppercase",
+                letterSpacing: ".08em",
+              }}
+            >
+              {k}
+            </button>
+          ))}
+        </div>
+      </header>
+
+      {/* Terminal Window */}
+      <main className="relative z-20 mx-auto max-w-5xl px-4 pb-24">
+        <div
+          className="mt-4 rounded-2xl border shadow-[0_0_40px_rgba(0,0,0,0.6)] backdrop-blur"
+          style={{
+            borderColor: theme.primary,
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00))",
+          }}
+          onClick={() => inputRef.current?.focus()}
+        >
+          {/* Title bar */}
+          <div className="flex items-center justify-between px-4 py-2 border-b" style={{ borderColor: theme.primary }}>
+            <div className="flex items-center gap-2">
+              <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: theme.secondary }} />
+              <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: theme.primary }} />
+              <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: theme.glow }} />
+              <span className="ml-3 text-sm" style={{ color: theme.subtext }}>/dev/pts/0 — secure terminal</span>
+            </div>
+            <div className="text-sm" style={{ color: theme.subtext }}>CTRL+C to break · Up/Down for history</div>
+          </div>
+
+          {/* Terminal body */}
+          <div className="px-4 py-4 font-mono text-sm md:text-base">
+            {/* History */}
+            {history.map((block, i) => (
+              <Line key={i} theme={theme}>{block}</Line>
+            ))}
+
+            {/* Prompt */}
+            <div className="mt-2 flex flex-wrap items-baseline gap-2">
+              <Prompt alias={alias} cwd={cwd} theme={theme} />
+              <input
+                aria-label="terminal input"
+                ref={inputRef}
+                className="flex-1 bg-transparent outline-none caret-white/80"
+                style={{ color: theme.text }}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={onKeyDown}
+                placeholder="type 'help'"
+              />
+            </div>
+            <div ref={endRef} />
+          </div>
+        </div>
+
+        {/* Quick skill cards (visual flex) */}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {["Cybersecurity","Programming","AI/ML","Hardware","Web/Net","Reverse Eng","Teamwork","Languages","Music"].map((k) => (
+            <div key={k} className="rounded-xl border p-4" style={{ borderColor: theme.primary, background: "rgba(255,255,255,0.02)", color: theme.text }}>
+              <div className="text-sm uppercase tracking-widest opacity-70" style={{ color: theme.subtext }}>{k}</div>
+              <div className="mt-2 text-xs opacity-80">see <span className="px-1 rounded" style={{ background: "rgba(255,255,255,0.06)" }}>skills</span> in the terminal</div>
+            </div>
+          ))}
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="relative z-20 px-6 py-8 text-center text-xs" style={{ color: theme.subtext }}>
+        © {new Date().getFullYear()} Oliver / JCKL — Hand-built, no trackers, no nonsense.
+      </footer>
+
+      {/* Local styles for glitch effect */}
+      <style>{String.raw`
+        .glitch { position: relative; display: inline-block; color: ${THEMES[themeName].text}; text-shadow: 0 0 8px ${THEMES[themeName].glow}; }
+        .glitch::before, .glitch::after { content: attr(data-text); position: absolute; left: 0; top: 0; width: 100%; overflow: hidden; }
+        .glitch::before { left: 1px; text-shadow: -2px 0 ${THEMES[themeName].secondary}; animation: glitch 2.2s infinite linear alternate-reverse; }
+        .glitch::after  { left: -1px; text-shadow:  2px 0 ${THEMES[themeName].primary};   animation: glitch 3s infinite linear alternate; }
+        @keyframes glitch { 0% { clip-path: inset(0 0 90% 0); } 20% { clip-path: inset(10% 0 60% 0) } 40% { clip-path: inset(40% 0 30% 0) } 60% { clip-path: inset(80% 0 0 0) } 80% { clip-path: inset(10% 0 50% 0) } 100% { clip-path: inset(0 0 90% 0) } }
+      `}</style>
+    </div>
+  );
+}
+
+export default function DedsecArchPortfolio() {
+  return <Terminal />;
+}
