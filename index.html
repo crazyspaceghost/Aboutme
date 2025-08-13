@@ -1,450 +1,449 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JCKL // DedSec × Arch — Interactive Terminal Portfolio</title>
+  <meta name="description" content="DedSec + Arch inspired terminal portfolio with a usable in-browser shell." />
+  <style>
+    :root{
+      --bg: #0a0b10;
+      --panel:#0f1018;
+      --fg:#d7faff;
+      --muted:#8bd0ff;
+      --accent:#00ffc3; /* neon */
+      --accent-2:#a855f7; /* purple */
+      --warn:#ffc54d;
+      --danger:#ff5577;
+      --grid: rgba(139,208,255,0.06);
+      --scan: rgba(0,255,195,0.08);
+      --shadow: 0 0 25px rgba(0,255,195,0.25), 0 0 60px rgba(168,85,247,0.15);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Fira Code", "JetBrains Mono", monospace;
+      --sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, sans-serif;
+    }
+    /* Themes */
+    body.theme-amber{ --accent:#ffb300; --accent-2:#ff6d00; --fg:#fff5e5; --muted:#ffd59e; --grid:rgba(255, 179, 0, 0.08); }
+    body.theme-ice{ --accent:#8ae9ff; --accent-2:#00b3ff; --fg:#e9fbff; --muted:#bdefff; --grid:rgba(138,233,255,0.09); }
 
-// =============================
-// DedSec × Arch Linux Terminal Portfolio — Single-file React Component
-// - Tailwind for styling (no external assets)
-// - Matrix rain background
-// - Interactive terminal with commands
-// - Theme switcher: dedsec | arch | matrix
-// =============================
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{
+      margin:0; background: radial-gradient(1200px 700px at 10% 0%, #0c0e16 0%, var(--bg) 60%) fixed; color:var(--fg);
+      font-family:var(--mono); letter-spacing:0.2px; overflow:hidden;
+    }
+    .scanlines::after{
+      content:""; position:fixed; inset:0; pointer-events:none; background:
+        repeating-linear-gradient( to bottom, transparent 0 2px, var(--scan) 2px 3px );
+      mix-blend-mode:overlay; opacity:.35;
+    }
+    .grid{
+      position:fixed; inset:0; background-size: 60px 60px, 60px 60px;
+      background-position: 0 0, 0 0; pointer-events:none; opacity:.35;
+      background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    }
+    .topbar{
+      position:fixed; left:18px; right:18px; top:14px; display:flex; align-items:center; gap:14px; z-index:5;
+      background:linear-gradient( to right, rgba(0,255,195,.08), rgba(168,85,247,.08) ); border:1px solid rgba(255,255,255,.06);
+      border-radius:12px; padding:10px 14px; box-shadow:var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+    .brand{ font-family:var(--sans); font-weight:800; letter-spacing:1px; font-size:14px; text-transform:uppercase }
+    .brand b{ color:var(--accent) }
+    .brand .arch{ color:var(--accent-2) }
+    .badge{ font-size:11px; opacity:.9; padding:3px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.12) }
+    .spacer{ flex:1 }
+    .btn{ cursor:pointer; font-size:12px; padding:6px 10px; border-radius:10px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.03) }
 
-const THEMES = {
-  dedsec: {
-    name: "DedSec",
-    primary: "#7c3aed", // violet-600
-    secondary: "#06b6d4", // cyan-500
-    text: "#e2e8f0", // slate-200
-    subtext: "#94a3b8", // slate-400
-    glow: "#22d3ee",
-    matrix: "#22d3ee",
-    bg: "#07090e",
-  },
-  arch: {
-    name: "Arch",
-    primary: "#1793D1",
-    secondary: "#38bdf8", // sky-400
-    text: "#e2e8f0",
-    subtext: "#94a3b8",
-    glow: "#60a5fa",
-    matrix: "#38bdf8",
-    bg: "#05070b",
-  },
-  matrix: {
-    name: "Matrix",
-    primary: "#22c55e", // green-500
-    secondary: "#16a34a", // green-600
-    text: "#e2e8f0",
-    subtext: "#9ca3af",
-    glow: "#86efac",
-    matrix: "#22c55e",
-    bg: "#030a04",
-  },
-};
+    .layout{ position:fixed; inset:64px 18px 18px 18px; display:grid; grid-template-columns: 1.35fr .9fr; gap:18px; z-index:1 }
 
-const ARCH_ASCII = String.raw`
-                  -'
-                 .o+                  _              _              _
-                'ooo                 /\\  _   _  ___| | _____  ___| | __
-               'ooooo               ( ( )| | | |/ __| |/ / _ \/ __| |/ /
-              'ooooooo               \\/ | |_| | (__|   <  __/ (__|   <
-             :ooooooooo                 \\__,_|\___|_|\_\___|\___|_|\_\
-            .ooooooooooo
-           .oooooo  ooooo.        ARCH x DEDSEC x MATRIX — OLIVER (JCKL)
-          .ooooo      ooooo.      type 'help' to begin · 'theme dedsec|arch|matrix'
-         .ooooo        ooooo.
+    .card{ background:linear-gradient(180deg, rgba(255,255,255,.028), rgba(255,255,255,.01)); border:1px solid rgba(255,255,255,.08);
+      border-radius:16px; box-shadow:var(--shadow); overflow:hidden; position:relative }
+
+    /* Terminal */
+    .terminal{ display:flex; flex-direction:column; height:100% }
+    .term-title{ display:flex; align-items:center; gap:10px; padding:10px 14px; background:rgba(255,255,255,.03); border-bottom:1px solid rgba(255,255,255,.06) }
+    .dot{ width:10px; height:10px; border-radius:999px; background:var(--accent); box-shadow: 0 0 12px var(--accent) }
+    .term-body{ flex:1; padding:14px; overflow:auto; scrollbar-width:thin; scrollbar-color: var(--muted) transparent; font-size:14px; line-height:1.4 }
+    .term-body .line{ white-space:pre-wrap; word-break:break-word; }
+    .promptline{ display:flex; align-items:center; gap:8px; }
+    .prompt{ color:var(--accent); }
+    .input{ flex:1; outline:none; border:none; background:transparent; color:var(--fg); font:inherit; caret-color:var(--accent); }
+    .input::placeholder{ color:rgba(255,255,255,.3) }
+
+    .term-body a{ color:var(--muted) }
+    .term-body .green{ color:#8dffb0 }
+    .term-body .red{ color:var(--danger) }
+    .term-body .yellow{ color:var(--warn) }
+
+    .huge-ascii{ color:var(--muted); text-shadow: 0 0 10px rgba(139,208,255,.35); }
+
+    /* Info panel */
+    .panel{ display:flex; flex-direction:column }
+    .panel .header{ padding:12px 14px; border-bottom:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.03); display:flex; align-items:center; gap:10px }
+    .panel .content{ flex:1; overflow:auto; padding:14px; font-size:14px }
+    .k{ color:var(--muted) }
+    .pill{ display:inline-block; padding:5px 10px; border:1px solid rgba(255,255,255,.14); border-radius:999px; margin:4px 6px 0 0; font-size:12px }
+    .section{ margin-bottom:18px }
+
+    .footer{ position:fixed; right:20px; bottom:12px; font-size:12px; opacity:.7 }
+
+    /* Matrix canvas hidden by default */
+    canvas#matrix{ position:fixed; inset:0; z-index:0; opacity:0; transition:opacity .35s ease }
+    canvas#matrix.on{ opacity:.25 }
+
+    /* Responsive */
+    @media (max-width: 1100px){
+      .layout{ grid-template-columns:1fr; inset:64px 12px 72px 12px }
+    }
+  </style>
+</head>
+<body class="scanlines theme-neon">
+  <div class="grid"></div>
+  <canvas id="matrix"></canvas>
+  <div class="topbar">
+    <div class="brand">JCKL <b>DedSec</b> × <span class="arch">Arch</span> — <span class="badge">interactive terminal</span></div>
+    <div class="spacer"></div>
+    <button class="btn" id="toggleMatrix" title="Toggle Matrix rain">Matrix</button>
+    <button class="btn" id="themeBtn" title="Cycle theme">Theme</button>
+  </div>
+
+  <main class="layout">
+    <section class="card terminal" aria-label="Terminal">
+      <div class="term-title"><span class="dot"></span> <strong>~/dedsec_shell</strong> — <span id="clock"></span></div>
+      <div class="term-body" id="term">
+        <div class="line huge-ascii">██╗     ███████╗██████╗ ███████╗███████╗ ██████╗  ██████╗
+██║     ██╔════╝██╔══██╗██╔════╝██╔════╝██╔════╝ ██╔════╝
+██║     █████╗  ██████╔╝█████╗  ███████╗██║  ███╗██║  ███╗
+██║     ██╔══╝  ██╔══██╗██╔══╝  ╚════██║██║   ██║██║   ██║
+███████╗███████╗██║  ██║███████╗███████║╚██████╔╝╚██████╔╝
+╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝  ╚═════╝ </div>
+        <div class="line">Type <span class="green">help</span> to see commands. Try <span class="yellow">neofetch</span>, <span class="yellow">skills</span>, or <span class="yellow">open about</span>.</div>
+      </div>
+      <div class="term-title" style="border-top:1px solid rgba(255,255,255,.06)">
+        <div class="promptline">
+          <span class="prompt" id="ps1"></span>
+          <input id="cmd" class="input" type="text" spellcheck="false" autocomplete="off" placeholder="help" aria-label="Command input" />
+        </div>
+      </div>
+    </section>
+
+    <aside class="card panel" aria-live="polite">
+      <div class="header"><strong>Panel</strong> — <span class="k" id="panelTitle">idle</span></div>
+      <div class="content" id="panel">
+        <div class="section">
+          <p>Welcome. This panel mirrors terminal commands like <code>open about</code>, <code>open skills</code>, and <code>open projects</code>. You can also open it manually with <code>open panel</code> / hide with <code>close panel</code>.</p>
+          <p>Theme presets: <code>theme neon</code>, <code>theme amber</code>, <code>theme ice</code>. Toggle Matrix rain: <code>matrix on/off</code>.</p>
+        </div>
+        <div class="section">
+          <div class="k">Quick Skills Snapshot</div>
+          <div id="quickSkills"></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <div class="footer">© <span id="year"></span> JCKL — locally rendered, zero‑deps.</div>
+
+  <template id="about-tpl">
+    <div class="section">
+      <h3>About</h3>
+      <p>Hi, I’m <strong>Oliver</strong> (aka <strong>JCKL</strong>). I break things, build them stronger, and make it look pretty while I’m at it. DedSec‑adjacent vibes, Arch Linux core.</p>
+    </div>
+    <div class="section"><div class="k">Languages</div>
+      <span class="pill">English</span><span class="pill">Swedish</span><span class="pill">Japanese (learning)</span>
+    </div>
+    <div class="section"><div class="k">Other</div>
+      <span class="pill">Problem‑solving under pressure</span>
+      <span class="pill">Bartering like it’s 2099</span>
+      <span class="pill">Teamwork with memes</span>
+    </div>
+    <div class="section"><div class="k">Contact</div>
+      <p>Oliverigel08@gmail.com</p>
+    </div>
+  </template>
+
+  <template id="skills-tpl">
+    <div class="section"><h3>Skills</h3></div>
+    <div class="section"><div class="k">Cybersecurity</div>
+      <span class="pill">Pen‑testing</span><span class="pill">Threat hunting</span><span class="pill">Malware analysis</span><span class="pill">Social engineering</span><span class="pill">Red/Blue Team ops</span><span class="pill">Network forensics</span><span class="pill">WiFi/ESP32 hacking</span>
+    </div>
+    <div class="section"><div class="k">Programming</div>
+      <span class="pill">C++</span><span class="pill">Python</span><span class="pill">JavaScript</span><span class="pill">bash</span><span class="pill">Linux automation</span><span class="pill">AI scripting</span><span class="pill">Game dev</span><span class="pill">Modding</span>
+    </div>
+    <div class="section"><div class="k">AI & ML</div>
+      <span class="pill">LLMs</span><span class="pill">Prompt engineering</span><span class="pill">Kobold/SillyTavern</span><span class="pill">Neural tinkering</span><span class="pill">Data science</span>
+    </div>
+    <div class="section"><div class="k">Hardware</div>
+      <span class="pill">Custom PCs</span><span class="pill">Servers</span><span class="pill">Car tuning (Volvo)</span><span class="pill">Electronics repair</span><span class="pill">ESP32</span><span class="pill">Soldering</span>
+    </div>
+    <div class="section"><div class="k">Web & Networking</div>
+      <span class="pill">Hosting game servers</span><span class="pill">Website design</span><span class="pill">Full‑stack</span><span class="pill">Proxy/VPN usage</span>
+    </div>
+    <div class="section"><div class="k">Reverse Engineering</div>
+      <span class="pill">Disassembly</span><span class="pill">Firmware poking</span><span class="pill">Secure OS concepts</span>
+    </div>
+    <div class="section"><div class="k">Skateboarding</div>
+      <span class="pill">Street</span><span class="pill">Park</span><span class="pill">Vert</span><span class="pill">Custom boards</span>
+    </div>
+    <div class="section"><div class="k">Music</div>
+      <span class="pill">Guitar</span><span class="pill">Harsh vocals</span><span class="pill">Synths</span><span class="pill">DAW work</span>
+    </div>
+  </template>
+
+  <template id="projects-tpl">
+    <div class="section"><h3>Projects (Sample)</h3></div>
+    <div class="section"><div class="k">Recent Builds & Ops</div>
+      <ul>
+        <li><strong>ESP32 Wi‑Fi toolkit</strong> — Wrist‑mounted menu‑driven pentest companion.</li>
+        <li><strong>DedSec‑style Linux ricer</strong> — i3/Wayland dotfiles with automation scripts.</li>
+        <li><strong>LLM Ops</strong> — Local model orchestration with SillyTavern/Kobold, prompt stacks.</li>
+        <li><strong>Game server ops</strong> — Hardened hosts, backups, mod lifecycle automation.</li>
+      </ul>
+    </div>
+  </template>
+
+  <script>
+    // ---------- Small state ----------
+    const $$ = (s, r=document) => r.querySelector(s);
+    const term = $$("#term");
+    const input = $$("#cmd");
+    const ps1El = $$("#ps1");
+    const panel = $$("#panel");
+    const panelTitle = $$("#panelTitle");
+    const themeBtn = $$("#themeBtn");
+    const yearEl = $$("#year");
+    const clockEl = $$("#clock");
+
+    const USER = "oliver";
+    const HOST = "arch";
+    const THEMES = ["neon","amber","ice"];
+
+    let history = [];
+    let hIndex = -1;
+
+    const setPS1 = () => {
+      ps1El.textContent = `${USER}@${HOST}:~$`;
+    };
+
+    const print = (html) => {
+      const line = document.createElement('div');
+      line.className = 'line';
+      line.innerHTML = html;
+      term.appendChild(line);
+      term.scrollTop = term.scrollHeight;
+    };
+
+    const printCode = (text) => {
+      print(`<pre class="line">${escapeHtml(text)}</pre>`);
+    }
+
+    const escapeHtml = (s) => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+    function banner(){
+      print(`<span class="huge-ascii">` +
+`     /\\\\\\\\\\\\\\\n`+
+`    /\\\/////////\\\   DedSec x Arch\n`+
+`    \//\\\      \///   JCKL interactive shell\n`+
+`      \////\\\\\\\\     type <span class="green">help</span>\n`+
+`        /////\\\\\\\   theme <span class="yellow">neon|amber|ice</span>\n`+
+`     /\\\      \//\\\\  matrix <span class="yellow">on|off</span>\n`+
+`     \///         \///\n` + `</span>`);
+    }
+
+    function neofetch(){
+      const ascii = `
+          /\\
+         /  \\
+        / /\\ \\
+       / ____  \\
+      / /    \  \\
+     /_/      \__\\\n   Arch Linux — JCKL
 `;
+      print(`<pre class="line">${escapeHtml(ascii)}</pre>`);
+      print(`OS: <span class="green">Arch Linux</span>   WM: custom   Shell: <span class="green">dedsec.js</span>\nUser: ${USER}   Host: ${HOST}`);
+    }
 
-const MOTD = (alias) => String.raw`
-┌─[${alias}@arch]─[~]
-└──╼ $ whoami
-> ${alias}
-
-// welcome to the zero-UI, all-signal portfolio.
-// everything runs from this terminal — just like it should.
-// try: help · about · skills · projects · contact · neofetch · resume · clear
-`;
-
-const SKILLS_TEXT = String.raw`
-Cybersecurity:
-  • Pen-testing, threat hunting, malware analysis
-  • Social engineering, Red/Blue Team ops, network forensics
-  • WiFi/ESP32 hacking
-
-Programming:
-  • C++, Python, JavaScript, bash
-  • Linux automation, AI scripting, game dev, modding
-
-AI & Machine Learning:
-  • LLMs, prompt engineering, Kobold/SillyTavern setups
-  • Neural network tinkering, data science
-
-Skateboarding:
-  • Street, park, vert — custom board design
-  • Can ollie over a server rack (probably)
-
-Hardware:
-  • Custom PC builds, server setup, car tuning (Volvo gang)
-  • Electronics repair, ESP32 projects, soldering
-
-Web & Networking:
-  • Hosting game servers, website design, full-stack dev
-  • Proxy/VPN usage
-
-Reverse Engineering:
-  • Disassembly, firmware poking, secure OS concepts
-
-Teamwork:
-  • Translating weird problems for normal humans (with memes)
-
-Languages:
-  • English, Swedish, Japanese (learning; can order sushi, read kanji)
-
-Music:
-  • Guitar, harsh vocals, synths, DAW work
-
-Other:
-  • Problem-solving under pressure. Bartering like it’s 2099.
-`;
-
-const ABOUT_TEXT = String.raw`
-Oliver (aka JCKL): scientist-minded hacker, full-stack builder, and digital skatepunk.
-If it can be taken apart, it can be understood — and rebuilt cleaner. I like reliable tools,
-minimal fluff, and shipping stuff that actually works.
-`;
-
-const PROJECTS_TEXT = String.raw`
-Active builds:
-  • ESP32 Wrist Tool — on-wrist cybersecurity Swiss army knife.
-  • ZTU OS / TKU OS — hacker-inspired Linux spins, clean modular UX.
-  • Fractura: Last Light Protocol — story-driven survival parkour game.
-  • Ghost Haven — factional underground garage ecosystem & ops rituals.
-`;
-
-function useMatrixRain(color) {
-  const canvasRef = useRef(null);
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-
-    const fontSize = 16;
-    const columns = Math.floor(width / fontSize);
-    const drops = new Array(columns).fill(0);
-
-    let animId;
-    const draw = () => {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
-      ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = color;
-      ctx.font = `${fontSize}px monospace`;
-      for (let i = 0; i < drops.length; i++) {
-        const char = String.fromCharCode(0x30A0 + Math.random() * 96);
-        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
-        if (Math.random() > 0.975 || drops[i] * fontSize > height) {
-          drops[i] = 0;
-        }
-        drops[i]++;
+    function listSkills(){
+      const skills = [
+        ['Cybersecurity', ['Pen-testing','Threat hunting','Malware analysis','Social engineering','Red/Blue Team ops','Network forensics','WiFi/ESP32 hacking']],
+        ['Programming', ['C++','Python','JavaScript','bash','Linux automation','AI scripting','Game dev','Modding']],
+        ['AI & ML', ['LLMs','Prompt engineering','Kobold/SillyTavern','Neural tinkering','Data science']],
+        ['Hardware', ['Custom PCs','Server setup','Car tuning (Volvo gang)','Electronics repair','ESP32 projects','Soldering']],
+        ['Web & Networking', ['Hosting game servers','Website design','Full-stack dev','Proxy/VPN usage']],
+        ['Reverse Engineering', ['Disassembly','Firmware poking','Secure OS concepts']],
+        ['Skateboarding', ['Street','Park','Vert','Custom board design']],
+        ['Music', ['Guitar','Harsh vocals','Synths','DAW work']],
+        ['Other', ['Problem-solving under pressure','Bartering like it’s 2099','Teamwork (with memes)']],
+      ];
+      for(const [k, arr] of skills){
+        print(`<span class="k">${k}</span>: ${arr.map(x=>`<span class='pill'>${x}</span>`).join(' ')}`);
       }
-      animId = requestAnimationFrame(draw);
-    };
-
-    draw();
-
-    const onResize = () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    };
-    window.addEventListener("resize", onResize);
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", onResize);
-    };
-  }, [color]);
-  return canvasRef;
-}
-
-function Line({ children, theme, dim = false }) {
-  return (
-    <div
-      className={`whitespace-pre-wrap break-words leading-relaxed ${
-        dim ? "opacity-70" : ""
-      }`}
-      style={{ color: theme.text }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function Prompt({ alias, cwd, theme }) {
-  return (
-    <span>
-      <span style={{ color: theme.secondary }}>┌─[{alias}@arch]</span>
-      <span style={{ color: theme.subtext }}>─[{cwd}]</span>
-      <br />
-      <span style={{ color: theme.secondary }}>└──╼</span>
-      <span style={{ color: theme.text }}> $</span>
-    </span>
-  );
-}
-
-function Terminal({ themeKey = "dedsec", alias = "oliver", email = "oliverigel08@gmail.com" }) {
-  const inputRef = useRef(null);
-  const [themeName, setThemeName] = useState(themeKey);
-  const theme = THEMES[themeName];
-
-  const [history, setHistory] = useState(() => [ARCH_ASCII, MOTD(alias)]);
-  const [input, setInput] = useState("");
-  const [cwd] = useState("~");
-  const [stack, setStack] = useState([]); // for Up/Down
-  const [stackIdx, setStackIdx] = useState(-1);
-  const endRef = useRef(null);
-
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [history]);
-
-  // ensure the input is focused on mount and after theme changes
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, [themeName]);
-
-  const commands = useMemo(
-    () => ({
-      help: () => String.raw`
-Available commands:
-  about, skills, projects, contact, neofetch, wifi-scan, ollie
-  resume (download JSON), theme <dedsec|arch|matrix>, clear
-`,
-      about: () => ABOUT_TEXT,
-      skills: () => SKILLS_TEXT,
-      projects: () => PROJECTS_TEXT,
-      contact: () => String.raw`Contact:
-  • email: ${email}
-  • alias: ${alias} (JCKL)
-  • comms: PGP on request. No social.`,
-      neofetch: () => ARCH_ASCII + String.raw`
-OS: ZTU OS (Arch-based)   Kernel: 6.x  Uptime: ∞
-Shell: zsh                 WM: i3-gaps
-CPU: Human Neural Net      GPU: Pure Skill
-Memory: Forgettable        Disk: Immutable
-`,
-      clear: () => "__CLEAR__",
-      "wifi-scan": () => String.raw`wlan0 scan results:
-  • GHST-HAVEN  [-45dBm] WPA2
-  • ZTU-NODE-01 [-52dBm] WPA3
-  • ESP32-DEADBEEF [-60dBm] Open (lol)
-  • FREE-COFFEE-WIFI [-84dBm] Captive Portal (nope)` ,
-      ollie: () => "Attempting ollie over 42U rack... ✔ Landed. (Security applauds quietly.)",
-      resume: () => {
-        const data = {
-          name: "Oliver (JCKL)",
-          role: "Scientist-minded hacker & builder",
-          email,
-          skills: SKILLS_TEXT.split("\n").filter(Boolean),
-          projects: [
-            "ESP32 Wrist Tool",
-            "ZTU OS / TKU OS",
-            "Fractura: Last Light Protocol",
-            "Ghost Haven",
-          ],
-        };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "oliver-jckl-resume.json";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-        return "Exported resume → oliver-jckl-resume.json";
-      },
-      theme: (arg) => {
-        const key = String(arg || "").toLowerCase().trim();
-        if (!THEMES[key]) return `unknown theme: ${arg}\noptions: dedsec | arch | matrix`;
-        setThemeName(key);
-        return `theme set → ${THEMES[key].name}`;
-      },
-    }),
-    [alias, email]
-  );
-
-  function handleCommand(raw) {
-    const line = raw.trim();
-    if (!line) return;
-
-    // push to stack for Up/Down recall
-    setStack((s) => [line, ...s]);
-    setStackIdx(-1);
-
-    const [cmd, ...rest] = line.split(" ");
-    const arg = rest.join(" ");
-    const fn = commands[cmd];
-
-    if (!fn) {
-      setHistory((h) => [
-        ...h,
-        `\n${ARCH_ASCII.split("\n")[0]}\ncommand not found: ${cmd}\ntry 'help'`,
-      ]);
-      return;
     }
 
-    const out = fn(arg);
-    if (out === "__CLEAR__") {
-      setHistory([]);
-    } else {
-      setHistory((h) => [...h, String(out)]);
+    function openPanel(which){
+      let tplId = null;
+      if(which === 'about') tplId = '#about-tpl';
+      if(which === 'skills') tplId = '#skills-tpl';
+      if(which === 'projects') tplId = '#projects-tpl';
+      if(!tplId){ panel.innerHTML = `<p class='k'>Unknown panel: ${escapeHtml(which)}</p>`; panelTitle.textContent = which; return; }
+      const tpl = $$(tplId);
+      panel.innerHTML = tpl.innerHTML;
+      panelTitle.textContent = which;
+      if(which==='skills') hydrateQuickSkills();
     }
-  }
 
-  function onKeyDown(e) {
-    if (e.key === "Enter") {
-      handleCommand(input);
-      setInput("");
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setStackIdx((i) => {
-        const ni = Math.min(i + 1, stack.length - 1);
-        setInput(stack[ni] || input);
-        return ni;
+    function hydrateQuickSkills(){
+      const qs = $$("#quickSkills"); if(!qs) return;
+      qs.innerHTML = ['Pen‑testing','C++','Python','LLMs','ESP32','Server ops','Reverse‑engineering']
+        .map(x=>`<span class="pill">${x}</span>`).join('');
+    }
+
+    function showHelp(){
+      print(`<span class='k'>Available commands</span>:\n` +
+        `help, clear, banner, date, echo, whoami, ls, cd, neofetch, skills, projects, contact, `+
+        `open <about|skills|projects|panel>, close panel, theme <neon|amber|ice>, matrix <on|off>, uname -a`);
+    }
+
+    function projects(){
+      print(`<span class='k'>Projects (sample)</span>\n- ESP32 Wi‑Fi toolkit (wrist‑mounted)\n- Local LLM Ops with SillyTavern/Kobold\n- Game server hardening + automation\n- DedSec‑style Linux ricer + dotfiles`);
+    }
+
+    function contact(){
+      print(`Contact: <span class='green'>[edit in source]</span> — Location: Sweden — Languages: English, Swedish, Japanese (learning)`);
+    }
+
+    function uname(){ print(`Linux ${HOST} 6.🤫.x #dedsec SMP JCKL x86_64 GNU/Linux`); }
+
+    function ls(){ print(`about.md  skills.txt  projects.json  panel/`); }
+
+    function cd(arg){ print(`cd: not a real filesystem, try: open about`); }
+
+    function echo(args){ print(escapeHtml(args.join(' '))); }
+
+    function dateCmd(){ print(new Date().toString()); }
+
+    function clear(){ term.innerHTML = ''; }
+
+    function whoami(){ print(`${USER}`); }
+
+    function theme(arg){
+      const b = document.body;
+      if(!arg){ print(`theme: ${THEMES.map(t=>t===getTheme()?`[${t}]`:t).join(' ')}`); return; }
+      const t = arg.toLowerCase();
+      if(!THEMES.includes(t)){ print(`theme: unknown '${escapeHtml(arg)}'`); return; }
+      b.classList.remove(...THEMES.map(t=>`theme-${t}`));
+      b.classList.add(`theme-${t}`);
+      localStorage.setItem('theme', t);
+      print(`Theme set to ${t}.`);
+    }
+
+    function getTheme(){
+      const t = THEMES.find(t=>document.body.classList.contains(`theme-${t}`));
+      return t || 'neon';
+    }
+
+    // Matrix rain
+    const matrix = $$('#matrix');
+    const ctx = matrix.getContext('2d');
+    let columns = [];
+    let matrixOn = false;
+    function resizeMatrix(){
+      matrix.width = innerWidth; matrix.height = innerHeight; columns = Array(Math.floor(matrix.width/14)).fill(0);
+    }
+    addEventListener('resize', resizeMatrix);
+    function drawMatrix(){
+      if(!matrixOn) return;
+      ctx.fillStyle = `rgba(0,0,0,0.06)`; ctx.fillRect(0,0,matrix.width,matrix.height);
+      ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--accent');
+      ctx.font = '14px '+getComputedStyle(document.body).getPropertyValue('--mono');
+      columns.forEach((y, i)=>{
+        const char = String.fromCharCode(0x30A0 + Math.random()*96);
+        const x = i*14; ctx.fillText(char, x, y);
+        if(y > matrix.height + Math.random()*1000) columns[i]=0; else columns[i]=y+14;
       });
-    } else if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setStackIdx((i) => {
-        const ni = Math.max(i - 1, -1);
-        setInput(ni === -1 ? "" : stack[ni]);
-        return ni;
-      });
-    } else if (e.key === "c" && (e.ctrlKey || e.metaKey)) {
-      // emulate Ctrl+C
-      setHistory((h) => [...h, "^C"]);
+      requestAnimationFrame(drawMatrix);
     }
-  }
+    function setMatrix(on){
+      matrixOn = !!on; matrix.classList.toggle('on', on); if(on){ resizeMatrix(); drawMatrix(); }
+      print(`Matrix ${on? 'enabled':'disabled'}.`);
+    }
 
-  // matrix background
-  const canvasRef = useMatrixRain(theme.matrix);
+    // ---------- Command router ----------
+    const router = (raw) => {
+      const line = raw.trim();
+      if(!line) return;
+      const [cmd, ...args] = tokenize(line);
+      switch(cmd){
+        case 'help': return showHelp();
+        case 'clear': return clear();
+        case 'banner': return banner();
+        case 'date': return dateCmd();
+        case 'echo': return echo(args);
+        case 'whoami': return whoami();
+        case 'ls': return ls();
+        case 'cd': return cd(args[0]);
+        case 'neofetch': return neofetch();
+        case 'skills': return listSkills();
+        case 'projects': return projects();
+        case 'contact': return contact();
+        case 'open': return openPanel(args[0]||'panel');
+        case 'close': if(args[0]==='panel'){ panel.innerHTML = '<p class="k">panel closed</p>'; panelTitle.textContent='idle'; } else { print('close: what? try: close panel'); } return;
+        case 'theme': return theme(args[0]);
+        case 'matrix': return setMatrix(args[0]==='on');
+        case 'uname': if(args[0]==='-a') return uname(); else return print('Try: uname -a');
+        default: return print(`<span class='red'>${escapeHtml(cmd)}</span>: command not found. Type <span class='green'>help</span>.`);
+      }
+    };
 
-  return (
-    <div className="relative min-h-screen w-full overflow-hidden" style={{ backgroundColor: theme.bg }}>
-      {/* Background matrix */}
-      <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-0" />
+    function tokenize(s){
+      const out=[]; let cur=''; let q=false;
+      for(let i=0;i<s.length;i++){
+        const c=s[i];
+        if(c==='"'){ q=!q; continue; }
+        if(c===' ' && !q){ if(cur){ out.push(cur); cur=''; } continue; }
+        cur+=c;
+      }
+      if(cur) out.push(cur);
+      return out;
+    }
 
-      {/* subtle scanline + vignette */}
-      <div className="fixed inset-0 z-10 mix-blend-screen opacity-30" style={{
-        backgroundImage:
-          "repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 2px, transparent 4px)",
-      }} />
-      <div className="fixed inset-0 z-10 pointer-events-none" style={{
-        boxShadow: "inset 0 0 200px rgba(0,0,0,0.7)",
-      }} />
+    function handleKey(e){
+      if(e.key==='Enter'){
+        const val = input.value;
+        print(`<span class='prompt'>${USER}@${HOST}:~$</span> ${escapeHtml(val)}`);
+        history.unshift(val); hIndex = -1; input.value='';
+        try{ router(val); }catch(err){ print(`<span class='red'>error:</span> ${escapeHtml(String(err))}`); }
+      } else if(e.key === 'ArrowUp'){
+        e.preventDefault(); if(history.length && hIndex < history.length-1){ hIndex++; input.value = history[hIndex]; setTimeout(()=>input.setSelectionRange(input.value.length,input.value.length),0); }
+      } else if(e.key === 'ArrowDown'){
+        e.preventDefault(); if(hIndex>0){ hIndex--; input.value = history[hIndex]; } else { hIndex=-1; input.value=''; }
+      } else if(e.key === 'Tab'){
+        e.preventDefault(); // simple autocomplete for commands
+        const base = input.value.trim();
+        const cmds = ['help','clear','banner','date','echo','whoami','ls','cd','neofetch','skills','projects','contact','open','close','theme','matrix','uname -a'];
+        const match = cmds.find(c=>c.startsWith(base)); if(match) input.value = match;
+      }
+    }
 
-      {/* Header */}
-      <header className="relative z-20 flex items-center justify-between px-6 py-4">
-        <div className="text-xl md:text-2xl font-bold tracking-wider select-none">
-          <span className="mr-2" style={{ color: theme.primary }}>▌▌</span>
-          <span className="glitch" data-text="JCKL">JCKL</span>
-          <span className="ml-2 text-xs md:text-sm" style={{ color: theme.subtext }}>oliver@arch</span>
-        </div>
-        <div className="flex items-center gap-2 text-xs md:text-sm" style={{ color: theme.subtext }}>
-          <span className="hidden sm:inline">theme:</span>
-          {Object.keys(THEMES).map((k) => (
-            <button
-              key={k}
-              onClick={() => setThemeName(k)}
-              className={`px-2 py-1 rounded border transition active:scale-[.98] ${
-                themeName === k ? "bg-white/5" : "hover:bg-white/5"
-              }`}
-              style={{
-                borderColor: theme.primary,
-                color: theme.text,
-                textTransform: "uppercase",
-                letterSpacing: ".08em",
-              }}
-            >
-              {k}
-            </button>
-          ))}
-        </div>
-      </header>
+    // ---------- Init ----------
+    setPS1(); hydrateQuickSkills(); yearEl.textContent = new Date().getFullYear();
+    input.addEventListener('keydown', handleKey);
+    input.focus();
+    themeBtn.addEventListener('click', ()=>{
+      const current = getTheme(); const idx = (THEMES.indexOf(current)+1)%THEMES.length; theme(THEMES[idx]);
+    });
+    $$("#toggleMatrix").addEventListener('click', ()=> setMatrix(!matrixOn));
 
-      {/* Terminal Window */}
-      <main className="relative z-20 mx-auto max-w-5xl px-4 pb-24">
-        <div
-          className="mt-4 rounded-2xl border shadow-[0_0_40px_rgba(0,0,0,0.6)] backdrop-blur"
-          style={{
-            borderColor: theme.primary,
-            background:
-              "linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00))",
-          }}
-          onClick={() => inputRef.current?.focus()}
-        >
-          {/* Title bar */}
-          <div className="flex items-center justify-between px-4 py-2 border-b" style={{ borderColor: theme.primary }}>
-            <div className="flex items-center gap-2">
-              <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: theme.secondary }} />
-              <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: theme.primary }} />
-              <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: theme.glow }} />
-              <span className="ml-3 text-sm" style={{ color: theme.subtext }}>/dev/pts/0 — secure terminal</span>
-            </div>
-            <div className="text-sm" style={{ color: theme.subtext }}>CTRL+C to break · Up/Down for history</div>
-          </div>
+    (function restore(){
+      const saved = localStorage.getItem('theme');
+      if(saved && THEMES.includes(saved)) theme(saved);
+    })();
 
-          {/* Terminal body */}
-          <div className="px-4 py-4 font-mono text-sm md:text-base">
-            {/* History */}
-            {history.map((block, i) => (
-              <Line key={i} theme={theme}>{block}</Line>
-            ))}
+    // Clock
+    setInterval(()=> clockEl.textContent = new Date().toLocaleString(), 1000);
 
-            {/* Prompt */}
-            <div className="mt-2 flex flex-wrap items-baseline gap-2">
-              <Prompt alias={alias} cwd={cwd} theme={theme} />
-              <input
-                aria-label="terminal input"
-                ref={inputRef}
-                className="flex-1 bg-transparent outline-none caret-white/80"
-                style={{ color: theme.text }}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={onKeyDown}
-                placeholder="type 'help'"
-              />
-            </div>
-            <div ref={endRef} />
-          </div>
-        </div>
-
-        {/* Quick skill cards (visual flex) */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {["Cybersecurity","Programming","AI/ML","Hardware","Web/Net","Reverse Eng","Teamwork","Languages","Music"].map((k) => (
-            <div key={k} className="rounded-xl border p-4" style={{ borderColor: theme.primary, background: "rgba(255,255,255,0.02)", color: theme.text }}>
-              <div className="text-sm uppercase tracking-widest opacity-70" style={{ color: theme.subtext }}>{k}</div>
-              <div className="mt-2 text-xs opacity-80">see <span className="px-1 rounded" style={{ background: "rgba(255,255,255,0.06)" }}>skills</span> in the terminal</div>
-            </div>
-          ))}
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="relative z-20 px-6 py-8 text-center text-xs" style={{ color: theme.subtext }}>
-        © {new Date().getFullYear()} Oliver / JCKL — Hand-built, no trackers, no nonsense.
-      </footer>
-
-      {/* Local styles for glitch effect */}
-      <style>{String.raw`
-        .glitch { position: relative; display: inline-block; color: ${THEMES[themeName].text}; text-shadow: 0 0 8px ${THEMES[themeName].glow}; }
-        .glitch::before, .glitch::after { content: attr(data-text); position: absolute; left: 0; top: 0; width: 100%; overflow: hidden; }
-        .glitch::before { left: 1px; text-shadow: -2px 0 ${THEMES[themeName].secondary}; animation: glitch 2.2s infinite linear alternate-reverse; }
-        .glitch::after  { left: -1px; text-shadow:  2px 0 ${THEMES[themeName].primary};   animation: glitch 3s infinite linear alternate; }
-        @keyframes glitch { 0% { clip-path: inset(0 0 90% 0); } 20% { clip-path: inset(10% 0 60% 0) } 40% { clip-path: inset(40% 0 30% 0) } 60% { clip-path: inset(80% 0 0 0) } 80% { clip-path: inset(10% 0 50% 0) } 100% { clip-path: inset(0 0 90% 0) } }
-      `}</style>
-    </div>
-  );
-}
-
-export default function DedsecArchPortfolio() {
-  return <Terminal />;
-}
+    // First impression
+    banner();
+  </script>
+</body>
+</html>
